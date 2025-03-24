@@ -1,0 +1,150 @@
+#!/bin/sh
+
+set -o errexit
+
+# shellcheck disable=SC2317  # Being usesd in trap which shellcheck can't follow
+cleanup_boot() {
+    umount "${BOOT_NEW}"
+    rm -rf "${BOOT_TMP}" "${BOOT_NEW}"
+}
+
+install_boot() {
+    BOOT_TMP=/tmp/boot-tmp
+    BOOT_NEW=/tmp/boot-new
+    BOOT_MNT=/mnt/boot
+
+    mkdir -p "${BOOT_TMP}"
+    mkdir -p "${BOOT_NEW}"
+
+    # Mount boot
+    if ! systemctl -q is-active mnt-boot.mount; then
+        systemctl start mnt-boot.mount
+    fi
+    mount "${RAUC_IMAGE_NAME}" "${BOOT_NEW}"
+    trap cleanup_boot EXIT
+
+    # Avoid stale/old overlays
+    rm -f "${BOOT_MNT}"/overlays/* || true
+
+    # Update
+    if [ "$RAUC_SYSTEM_COMPATIBLE" = "haos-rpi5-64" ]; then
+        rm -rf "${BOOT_MNT}/slot-default"
+        cp -r "${BOOT_NEW}/slot-A" "${BOOT_MNT}/slot-default"
+        sed -i "1 s/rootfstype=squashfs //" /mnt/boot/cmdline.txt
+    else
+        # Backup boot config
+        cp -f "${BOOT_MNT}"/*.txt "${BOOT_TMP}/" || true
+        cp -f "${BOOT_MNT}"/EFI/BOOT/grubenv "${BOOT_TMP}/" || true
+
+        cp -rf "${BOOT_NEW}"/* "${BOOT_MNT}/"
+
+        # Restore boot config
+        cp -f "${BOOT_TMP}"/*.txt "${BOOT_MNT}/" || true
+        cp -f "${BOOT_TMP}"/grubenv "${BOOT_MNT}"/EFI/BOOT/ || true
+    fi
+
+    # Add CM5 support for Yellow. Can be removed in HAOS 15.
+    if [ "$RAUC_SYSTEM_COMPATIBLE" = "haos-yellow" ]; then
+        if ! grep -q "\[cm5\]" "${BOOT_MNT}/config.txt"; then
+            echo "Adding CM5 config to config.txt"
+
+            # Remove old single device_tree config and add CM-specific ones
+            sed -i '/device_tree=bcm2711-rpi-cm4-ha-yellow.dtb/d; s/\[all\]/\[cm4\]\ndevice_tree=bcm2711-rpi-cm4-ha-yellow.dtb\n\n\[cm5\]\ndevice_tree=bcm2712-rpi-cm5-ha-yellow.dtb\n\n\[all\]/' "${BOOT_MNT}/config.txt"
+        fi
+    fi
+}
+
+install_spl() {
+    DEVICE_CHILD="$(findfs LABEL="hassos-boot")"
+    DEVICE_ROOT="/dev/$(lsblk -no pkname "${DEVICE_CHILD}")"
+    PART_TABLE="$(sfdisk -lqJ "${DEVICE_ROOT}")"
+    PART_LABEL="$(echo "${PART_TABLE}" | jq -r '.partitiontable.label')"
+    FLAGS=""
+
+    if dd oflag=direct if=/dev/null 2> /dev/null; then
+        FLAGS="oflag=direct"
+    fi
+
+    if [ "${PART_LABEL}" = "gpt" ]; then
+        dd if="${RAUC_IMAGE_NAME}" of="${DEVICE_ROOT}" conv=notrunc ${FLAGS} bs=512 seek=64 skip=64
+    else
+        dd if="${RAUC_IMAGE_NAME}" of="${DEVICE_ROOT}" conv=notrunc ${FLAGS} bs=1 count=440
+        dd if="${RAUC_IMAGE_NAME}" of="${DEVICE_ROOT}" conv=notrunc ${FLAGS} bs=512 seek=1 skip=1
+    fi
+
+    # Flash to eMMC boot partition if necessary
+    if [ "$RAUC_SYSTEM_COMPATIBLE" = "haos-odroid-xu4" ] && [ -b "${DEVICE_ROOT}boot0" ]; then
+        echo "Updating eMMC boot partition"
+        echo 0 > /sys/block/"$(basename "${DEVICE_ROOT}boot0")"/force_ro
+        dd if="${RAUC_IMAGE_NAME}" of="${DEVICE_ROOT}boot0" conv=notrunc ${FLAGS} bs=512 skip=1 count=2047
+        echo 1 > /sys/block/"$(basename "${DEVICE_ROOT}boot0")"/force_ro
+    fi
+}
+
+check_grubenv() {
+    BOOT_MNT=/mnt/boot
+
+    # Mount boot
+    if ! systemctl -q is-active mnt-boot.mount; then
+        systemctl start mnt-boot.mount
+    fi
+
+    # If GRUB is installed, check if GRUB environment has been currupted
+    if command -v grub-editenv > /dev/null; then
+        if ! grub-editenv "${BOOT_MNT}/EFI/BOOT/grubenv" list > /dev/null; then
+            echo "GRUB environment seems to be corrupted. Recreating a new environment."
+            grub-editenv "${BOOT_MNT}"/EFI/BOOT/grubenv create
+        fi
+    fi
+}
+
+post_install_kernel() {
+    BOOT_MNT=/mnt/boot
+
+    # Mount boot
+    if ! systemctl -q is-active mnt-boot.mount; then
+        systemctl start mnt-boot.mount
+    fi
+
+    # Copy new OS to appropriate directory
+    if [ "$RAUC_SYSTEM_COMPATIBLE" = "haos-rpi5-64" ]; then
+        rm -rf "${BOOT_MNT}/slot-${RAUC_SLOT_BOOTNAME}"
+        mv "${BOOT_MNT}/slot-default" "${BOOT_MNT}/slot-${RAUC_SLOT_BOOTNAME}"
+    fi
+}
+
+##
+# Hooks
+
+case "$1" in
+     install-check)
+         if [ "$RAUC_MF_COMPATIBLE" = "$RAUC_SYSTEM_COMPATIBLE" ]; then
+             # Check if GRUB env has been corrupted. This is only problematic
+             # with OS 8+, where compatible matches.
+             check_grubenv
+             exit 0
+         fi
+         echo "Compatible does not match!" 1>&2
+         exit 10
+         ;;
+    slot-install)
+        if [ "${RAUC_SLOT_CLASS}" = "boot" ]; then
+            install_boot
+        elif [ "${RAUC_SLOT_CLASS}" = "spl" ]; then
+            install_spl
+        fi
+        ;;
+    slot-post-install)
+        if [ "${RAUC_SLOT_CLASS}" = "boot" ]; then
+            post_install_boot
+        fi
+        if [ "${RAUC_SLOT_CLASS}" = "kernel" ]; then
+            post_install_kernel
+        fi
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+
+exit 0
