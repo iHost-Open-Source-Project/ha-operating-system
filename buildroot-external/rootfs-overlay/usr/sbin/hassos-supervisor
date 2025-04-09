@@ -12,7 +12,7 @@ set -e
 SUPERVISOR_DATA=/mnt/data/supervisor
 SUPERVISOR_STARTUP_MARKER="/run/supervisor/startup-marker"
 SUPERVISOR_STARTSCRIPT_VERSION="/mnt/data/.hassos-supervisor-version"
-SUPERVISOR_IMAGE="ghcr.io/home-assistant/${SUPERVISOR_ARCH}-hassio-supervisor"
+SUPERVISOR_IMAGE="oliverc7/${SUPERVISOR_ARCH}-hassio-supervisor"
 
 SUPERVISOR_IMAGE_ID=$(docker images --no-trunc --filter "reference=${SUPERVISOR_IMAGE}:latest" --format "{{.ID}}" || echo "")
 SUPERVISOR_CONTAINER_ID=$(docker inspect --format='{{.Image}}' hassio_supervisor || echo "")
@@ -47,7 +47,7 @@ if [ -z "${SUPERVISOR_IMAGE_ID}" ]; then
     # Get version from stable channel in case we have no local version
     # information.
     if [ "${SUPERVISOR_VERSION}" = "stable" ]; then
-        SUPERVISOR_VERSION="$(curl -s --location https://version.home-assistant.io/stable.json | jq -e -r '.supervisor')"
+        SUPERVISOR_VERSION="$(curl -s --location https://raw.githubusercontent.com/iHost-Open-Source-Project/haos-version/main/stable.json | jq -e -r '.supervisor')"
     fi
 
     echo "[WARNING] Supervisor image missing, downloading a fresh one: ${SUPERVISOR_VERSION}"
@@ -60,7 +60,7 @@ if [ -z "${SUPERVISOR_IMAGE_ID}" ]; then
         # Pull failed, updater info might be corrupted or the release might have
 	# been removed from the container registry, delete the updater info
 	# to start from scratch on next try.
-        echo "[ERROR] Supervisor download failed."
+        echo "[ERROR] Supervisor downloading failed."
         rm -f "${SUPERVISOR_DATA}/updater.json"
         exit 1
     fi
