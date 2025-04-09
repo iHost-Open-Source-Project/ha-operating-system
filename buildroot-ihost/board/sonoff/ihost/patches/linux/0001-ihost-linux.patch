@@ -1,21 +1,3 @@
-From e82a7f28070095bd6dbd23931cad389bbff8079e Mon Sep 17 00:00:00 2001
-From: Tim Lunn <tim@feathertop.org>
-Date: Sat, 7 Oct 2023 10:57:48 +1100
-Subject: [PATCH] Port Naneng USB2 phy from Rockchip BSP kernel
-
----
- .../bindings/phy/phy-rockchip-naneng-usb2.txt |   74 +
- drivers/extcon/extcon.c                       |    6 +
- drivers/phy/rockchip/Kconfig                  |   11 +
- drivers/phy/rockchip/Makefile                 |    1 +
- .../phy/rockchip/phy-rockchip-naneng-usb2.c   | 1934 +++++++++++++++++
- include/linux/extcon.h                        |    1 +
- include/linux/wakelock.h                      |   76 +
- 7 files changed, 2103 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/phy/phy-rockchip-naneng-usb2.txt
- create mode 100644 drivers/phy/rockchip/phy-rockchip-naneng-usb2.c
- create mode 100644 include/linux/wakelock.h
-
 diff --git a/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-usb2.txt b/Documentation/devicetree/bindings/phy/phy-rockchip-naneng-usb2.txt
 new file mode 100644
 index 000000000000..b54fbfff2821
@@ -96,6 +78,203 @@ index 000000000000..b54fbfff2821
 +		status = "disabled";
 +	};
 +};
+diff --git a/Documentation/devicetree/bindings/usb/rockchip,rk3399-dwc3.yaml b/Documentation/devicetree/bindings/usb/rockchip,rk3399-dwc3.yaml
+index 3159f9a6a0f7..60a61ceb6a1d 100644
+--- a/Documentation/devicetree/bindings/usb/rockchip,rk3399-dwc3.yaml
++++ b/Documentation/devicetree/bindings/usb/rockchip,rk3399-dwc3.yaml
+@@ -11,7 +11,11 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    const: rockchip,rk3399-dwc3
++    oneOf:
++      - items:
++          - const: rockchip,rv1126-dwc3
++          - const: rockchip,rk3399-dwc3
++      - const: rockchip,rk3399-dwc3
+ 
+   '#address-cells':
+     const: 2
+diff --git a/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi b/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
+index 9a87dc0d5f66..6f6033fd570f 100644
+--- a/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
++++ b/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
+@@ -323,15 +323,15 @@ wifi_enable_h: wifi-enable-h {
+ };
+ 
+ &pmu_io_domains {
+-	pmuio0-supply = <&vcc1v8_pmu>;
++	pmuio0-supply = <&vcc3v3_sys>;
+ 	pmuio1-supply = <&vcc3v3_sys>;
+ 	vccio1-supply = <&vcc_1v8>;
+ 	vccio2-supply = <&vccio_sd>;
+-	vccio3-supply = <&vcc3v3_sd>;
+-	vccio4-supply = <&vcc_dovdd>;
+-	vccio5-supply = <&vcc_1v8>;
+-	vccio6-supply = <&vcc_1v8>;
+-	vccio7-supply = <&vcc_dovdd>;
++	vccio3-supply = <&vcc_3v3>;
++	vccio4-supply = <&vcc_3v3>;
++	vccio5-supply = <&vcc_3v3>;
++	vccio6-supply = <&vcc_3v3>;
++	vccio7-supply = <&vcc_1v8>;
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm/boot/dts/rockchip/rv1126.dtsi b/arch/arm/boot/dts/rockchip/rv1126.dtsi
+index 434846b85c95..d4e1654c5bc4 100644
+--- a/arch/arm/boot/dts/rockchip/rv1126.dtsi
++++ b/arch/arm/boot/dts/rockchip/rv1126.dtsi
+@@ -158,6 +158,16 @@ qos_vop: qos@fe8a0180 {
+ 		reg = <0xfe8a0180 0x20>;
+ 	};
+ 
++	qos_usb_host: qos@fe810000 {
++		compatible = "rockchip,rv1126-qos", "syscon";
++		reg = <0xfe810000 0x20>;
++	};
++
++	qos_usb_otg: qos@fe810080 {
++		compatible = "rockchip,rv1126-qos", "syscon";
++		reg = <0xfe810080 0x20>;
++	};
++
+ 	gic: interrupt-controller@feff0000 {
+ 		compatible = "arm,gic-400";
+ 		interrupt-controller;
+@@ -222,6 +232,19 @@ power-domain@RV1126_PD_VO {
+ 					 <&qos_iep>;
+ 				#power-domain-cells = <0>;
+ 			};
++
++			power-domain@RV1126_PD_USB {
++				reg = <RV1126_PD_USB>;
++				clocks = <&cru HCLK_USBHOST>,
++				<&cru HCLK_USBHOST_ARB>,
++				<&cru CLK_USBHOST_UTMI_OHCI>,
++				<&cru ACLK_USBOTG>,
++				<&cru CLK_USBOTG_REF>;
++				pm_qos = <&qos_usb_host>,
++				<&qos_usb_otg>;
++				#power-domain-cells = <0>;
++			};
++
+ 		};
+ 	};
+ 
+@@ -444,6 +467,51 @@ pwm11: pwm@ff550030 {
+ 		status = "disabled";
+ 	};
+ 
++	u2phy0: usb2phy@ff4c0000 {
++		compatible = "rockchip,rv1126-usb2phy";
++		reg = <0xff4c0000 0x8000>;
++		rockchip,grf = <&grf>;
++		clocks = <&pmucru CLK_USBPHY_OTG_REF>, <&cru PCLK_USBPHY_OTG>;
++		clock-names = "phyclk", "pclk";
++		resets = <&cru SRST_USBPHYPOR_OTG>, <&cru SRST_USBPHY_OTG_P>;
++		reset-names = "u2phy", "u2phy-apb";
++		#clock-cells = <0>;
++		status = "disabled";
++
++		u2phy_otg: otg-port {
++			#phy-cells = <0>;
++			interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "otg-bvalid", "otg-id",
++					  "linestate", "disconnect";
++			status = "disabled";
++		};
++	};
++
++	u2phy1: usb2phy@ff4c8000 {
++		compatible = "rockchip,rv1126-usb2phy";
++		reg = <0xff4c8000 0x8000>;
++		rockchip,grf = <&grf>;
++		clocks = <&pmucru CLK_USBPHY_HOST_REF>, <&cru PCLK_USBPHY_HOST>;
++		clock-names = "phyclk", "pclk";
++		#clock-cells = <0>;
++		assigned-clocks = <&cru USB480M>;
++		assigned-clock-parents = <&u2phy1>;
++		clock-output-names = "usb480m_phy";
++		resets = <&cru SRST_USBPHYPOR_HOST>, <&cru SRST_USBPHY_HOST_P>;
++		reset-names = "u2phy", "u2phy-apb";
++		status = "disabled";
++
++		u2phy_host: host-port {
++			#phy-cells = <0>;
++			interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "linestate", "disconnect";
++			status = "disabled";
++		};
++	};
+ 	uart0: serial@ff560000 {
+ 		compatible = "rockchip,rv1126-uart", "snps,dw-apb-uart";
+ 		reg = <0xff560000 0x100>;
+@@ -523,6 +591,60 @@ uart5: serial@ff5a0000 {
+ 		reg-io-width = <4>;
+ 		status = "disabled";
+ 	};
++	usbdrd: usb0 {
++		compatible = "rockchip,rv1126-dwc3", "rockchip,rk3399-dwc3";
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++		clocks = <&cru CLK_USBOTG_REF>, <&cru ACLK_USBOTG>,
++			 <&cru HCLK_PDUSB>;
++		clock-names = "ref_clk", "bus_clk", "hclk";
++		resets = <&cru SRST_USBOTG_A>;
++		reset-names = "usb3-otg";
++		status = "disabled";
++
++		usbdrd_dwc3: usb@ffd00000 {
++			compatible = "snps,dwc3";
++			reg = <0xffd00000 0x100000>;
++			interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
++			dr_mode = "otg";
++			maximum-speed = "high-speed";
++			phys = <&u2phy_otg>;
++			phy-names = "usb2-phy";
++			phy_type = "utmi_wide";
++			power-domains = <&power RV1126_PD_USB>;
++			snps,dis_enblslpm_quirk;
++			snps,dis-u2-freeclk-exists-quirk;
++			snps,dis_u2_susphy_quirk;
++			snps,dis-del-phy-power-chg-quirk;
++			snps,dis-tx-ipgap-linecheck-quirk;
++			status = "disabled";
++		};
++	};
++
++	usb_host0_ehci: usb@ffe00000 {
++		compatible = "generic-ehci";
++		reg = <0xffe00000 0x10000>;
++		interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru HCLK_USBHOST>, <&cru HCLK_USBHOST_ARB>,
++			 <&u2phy1>;
++		phys = <&u2phy_host>;
++		phy-names = "usb";
++		power-domains = <&power RV1126_PD_USB>;
++		status = "disabled";
++	};
++
++	usb_host0_ohci: usb@ffe10000 {
++		compatible = "generic-ohci";
++		reg = <0xffe10000 0x10000>;
++		interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru HCLK_USBHOST>, <&cru HCLK_USBHOST_ARB>,
++			 <&u2phy1>;
++		phys = <&u2phy_host>;
++		phy-names = "usb";
++		power-domains = <&power RV1126_PD_USB>;
++		status = "disabled";
++	};
+ 
+ 	saradc: adc@ff5e0000 {
+ 		compatible = "rockchip,rv1126-saradc", "rockchip,rk3399-saradc";
 diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
 index e7f55c021e56..280a4a0a2a57 100644
 --- a/drivers/extcon/extcon.c
@@ -114,7 +293,7 @@ index e7f55c021e56..280a4a0a2a57 100644
  	[EXTCON_CHG_USB_SDP] = {
  		.type = EXTCON_TYPE_CHG | EXTCON_TYPE_USB,
 diff --git a/drivers/phy/rockchip/Kconfig b/drivers/phy/rockchip/Kconfig
-index 94360fc96a6f..114d847e2acb 100644
+index 2f7a05f21dc5..487743b579ff 100644
 --- a/drivers/phy/rockchip/Kconfig
 +++ b/drivers/phy/rockchip/Kconfig
 @@ -74,6 +74,17 @@ config PHY_ROCKCHIP_NANENG_COMBO_PHY
@@ -136,7 +315,7 @@ index 94360fc96a6f..114d847e2acb 100644
  	tristate "Rockchip PCIe PHY Driver"
  	depends on (ARCH_ROCKCHIP && OF) || COMPILE_TEST
 diff --git a/drivers/phy/rockchip/Makefile b/drivers/phy/rockchip/Makefile
-index 7eab129230d1..dcb2c2285f5b 100644
+index 010a824e32ce..856007f920bf 100644
 --- a/drivers/phy/rockchip/Makefile
 +++ b/drivers/phy/rockchip/Makefile
 @@ -7,6 +7,7 @@ obj-$(CONFIG_PHY_ROCKCHIP_INNO_DSIDPHY)	+= phy-rockchip-inno-dsidphy.o
@@ -145,14 +324,14 @@ index 7eab129230d1..dcb2c2285f5b 100644
  obj-$(CONFIG_PHY_ROCKCHIP_NANENG_COMBO_PHY)	+= phy-rockchip-naneng-combphy.o
 +obj-$(CONFIG_PHY_ROCKCHIP_NANENG_USB2)  += phy-rockchip-naneng-usb2.o
  obj-$(CONFIG_PHY_ROCKCHIP_PCIE)		+= phy-rockchip-pcie.o
+ obj-$(CONFIG_PHY_ROCKCHIP_SAMSUNG_HDPTX)	+= phy-rockchip-samsung-hdptx.o
  obj-$(CONFIG_PHY_ROCKCHIP_SNPS_PCIE3)	+= phy-rockchip-snps-pcie3.o
- obj-$(CONFIG_PHY_ROCKCHIP_TYPEC)	+= phy-rockchip-typec.o
 diff --git a/drivers/phy/rockchip/phy-rockchip-naneng-usb2.c b/drivers/phy/rockchip/phy-rockchip-naneng-usb2.c
 new file mode 100644
-index 000000000000..fcc2b9531c34
+index 000000000000..b436f842fdc0
 --- /dev/null
 +++ b/drivers/phy/rockchip/phy-rockchip-naneng-usb2.c
-@@ -0,0 +1,1934 @@
+@@ -0,0 +1,1933 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Rockchip USB2.0 PHY with Naneng IP block driver
@@ -185,6 +364,7 @@ index 000000000000..fcc2b9531c34
 +#include <linux/usb/of.h>
 +#include <linux/usb/otg.h>
 +#include <linux/wakelock.h>
++#include <linux/of_device.h>
 +
 +struct rockchip_usb2phy;
 +
@@ -1770,7 +1950,7 @@ index 000000000000..fcc2b9531c34
 +	return ret;
 +}
 +
-+static int rockchip_usb2phy_remove(struct platform_device *pdev)
++static void rockchip_usb2phy_remove(struct platform_device *pdev)
 +{
 +	struct device_node *np = pdev->dev.of_node;
 +	struct rockchip_usb2phy *rphy = platform_get_drvdata(pdev);
@@ -1778,8 +1958,6 @@ index 000000000000..fcc2b9531c34
 +	if (rphy->vup_gpio &&
 +	    of_device_is_compatible(np, "rockchip,rv1126-usb2phy"))
 +		hrtimer_cancel(&rphy->wait_timer);
-+
-+	return 0;
 +}
 +
 +static int rv1126_usb2phy_tuning(struct rockchip_usb2phy *rphy)
@@ -2181,6 +2359,3 @@ index 000000000000..7b4825ba9521
 +}
 +
 +#endif
--- 
-2.40.1
-
