@@ -1,0 +1,169 @@
+# HA over iHost README
+
+[English](README.md)
+
+**Home Assistant For SONOFF iHost**
+
+## Home Assistant For Sonoff iHost
+
+## 操作前必读
+
+- 一台iHost 且 iHost 系统版本需至少为 V2.5.1
+- 建议使用[一个 Application Class 2](https://www.sdcard.org/developers/overview/application/index.html) 的 SD Card。检查卡上的标签 A2，A2 类卡的性能更好，尤其是在小型读写操作中，更适合主机应用程序，SD Card 存储空间至少 32 GB
+- iHost 处理器为32位，无法下载和安装Home Assistant 中支持 64 位架构的 Add-on ，如：Node-RED 、Studio Code Server 等 Add-on 
+
+![img](images/cn/ihost-device.png)![img](images/cn/ihost-ports.png)
+
+## SD Card 烧录
+
+### 所需硬件
+
+- iHost  一台
+- 32GB 及以上 A2 SD Card 一张
+- 读卡器一个：大多数笔记本电脑已带有该功能，但如果您没有独立的 USB 适配器，您可以购买[独立的 USB 读卡器](https://amzn.to/2WWxntY)。品牌无关紧要，只要选最便宜的就好。
+
+### 所需软件
+
+- SD Card 烧录工具：[Balena Etcher](https://etcher.balena.io/) 或 [Raspberry Pi Imager](https://www.raspberrypi.com/software/) 等 
+- 可在 iHost 上运行的 Home Assistant， 访问 github项目：  [iHost-Open-Source-Porject](https://github.com/iHost-Open-Source-Project/ha-operating-system/releases)，下载最新的镜像文件
+
+![img](images/cn/ha-release-page.png)
+
+### 操作步骤
+
+#### Balena Etcher
+
+- 将 SD Card 接入读卡器中，并插在电脑上(Windows/MacOS/Linux)
+- 运行 Balena Etcher
+
+![img](images/cn/etcher-main-cn.png)
+
+- "从文件烧录" -> 选择下载到本地的 HA over iHost 的镜像文件
+
+![img](images/cn/etcher-select-file-cn.png)
+
+- "选择目标磁盘" -> 选择您所插入的 SD Card [!!!请注意不要选错磁盘!!!]
+
+![img](images/cn/etcher-select-target-cn.png)
+
+- 点击"现在烧录！"开始将下载的"HA over iHost"镜像文件烧录到 SD Card中，烧录过程中请不要操作 SD Card
+
+#### Raspberry Pi Imager
+
+- 将 SD Card 接入读卡器中，并插在电脑上(Windows/MacOS/Linux)
+- 运行  Raspberry Pi Imager
+
+![img](images/cn/pi-imager-main-cn.png)
+
+- "选择设备" -> 选择 No filtering
+
+![img](images/cn/pi-imager-device-cn.png)
+
+- "选择操作系统" -> 选择 Use custom> 选择下载到本地的 HA over iHost 的镜像文件
+
+![img](images/cn/pi-imager-os-cn.png)
+
+![img](images/cn/pi-imager-custom-cn.png)
+
+- "选择SD卡" -> 选择您所插入的 SD Card [!!!请注意不要选错磁盘!!!]
+
+![img](images/cn/pi-imager-storage-cn.png)
+
+- 点击"NEXT"-> 允许清空SD卡的所有数据 
+
+![img](images/cn/pi-imager-settings-cn.png)
+
+![img](images/cn/pi-imager-clear-cn.png)
+
+![img](images/cn/pi-imager-confirm-cn.png)
+
+![img](images/cn/pi-imager-flashing-cn.png)
+
+- 开始将下载的"HA over iHost"镜像文件烧录到 SD Card中，烧录过程中请不要操作 SD Card
+
+![img](images/cn/boot-blue-light.gif)
+
+## 在 iHost 中启动 Home Assistant
+
+### (可选) Zigbee 设备迁移
+
+ iHost 支持下载 Zigbee 设备备份文件到本地，可将已经在 iHost 中添加的Zigbee设备恢复到Home Assistant 的 ZHA 或 Zigbee2MQTT中。该功能仅迁移 Zigbee 网络和设备状态，关于在 iHost 上对 Zigbee 设备设置的定时器、群组、场景、设备名称都无法迁移，可查看 [操作指引](https://appcms.coolkit.cn/extra/26967.html)。
+
+### 正常启动流程
+
+- 待烧录完成后，取出 SD Card 并插入iHost SD Card 卡槽
+- 给 iHost 连接网线并上电，在通电同时不断按下静音按键 ♪ ，直至 iHost 的灯条出现蓝色呼吸，系统将开始改变为 SD Card 卡上的 Home Assistant；
+
+![img](images/cn/boot-failure.gif)
+
+- 在看到蓝色呼吸灯的十分钟内，您将能够访问您的新 Home Assistant，第一次启动需要的时间会长一点
+
+- - 在桌面系统的浏览器中，输入 [homeassistant.local：8123](http://homeassistant.local:8123/)
+  - Note  注意：如果您运行的是较旧的 Windows 版本或具有更严格的网络配置，则可能需要在 [homeassistant：8123](http://homeassistant:8123/) 或 `http://X.X.X.X:8123` 访问 Home Assistant（请将 X.X.X.X 替换为您的 Raspberry Pi 的 IP 地址）
+
+### 启动失败
+
+- 如果 10分钟内没有正常访问，则可能是图像写入不正确，请尝试再次刷写 SD 卡，甚至可能尝试不同的 SD 卡。
+- 若在通电5秒后未看到蓝色呼吸灯即进入失败（指示灯显示红色呼吸），您需要再次断电重启来尝试从SD Card卡启动Home assistant
+
+![img](images/cn/boot-failure.gif)
+
+此时您不需要单击静音按键，因为 iHost 会记住您上一次是从TF卡启动 Home assisatnt，在您断电重启后会自动尝试从SD Card卡启动 Home assistant 。
+
+### 切换回 eWeLink CUBE
+
+- 若需要切换回 eWeLink CUBE，重复此通电及按键操作（在通电后3s内不断按下静音按键）即可，切换 eWeLink-CUBE 系统成功后，灯条灯效从蓝色呼吸改为红色跑马灯
+
+![img](images/cn/switch-back.gif)
+
+注:
+
+- 若您的局域网中有超过一台运行 HomeAssistant 设备，则无法通过 homeassistant.local 域名进行访问，需通过路由器后台或 mDNS 广播[_home-assistant._tcp.]查找 IP 地址
+- 若您的 iHost 上次启动为 SD Card，当您移除 SD Card 且没有切换为 eWeLink CUBE 系统时，灯条灯效将表现为红色呼吸
+
+## 硬件资源
+
+在 iHost 上成功启动 Home Assistant 后，您可以在 Home Assistant 中使用 iHost 提供的硬件资源。
+
+- 按键及指示灯
+
+  可通过在Home Assistant 安装运行 "iHost Hardware Control"add-on 来控制 iHost 机身上的按键和指示灯效果，该 add-on 会将按键和指示灯分别注册为设备和不同的实体，可利用Home Assistant 中的自动化来控制按键和指示灯的不同效果，可查看[使用教程](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon)
+
+  ![img](images/cn/ihost-hardware-control-cn.png)
+
+- 蓝牙 
+
+- - 型号:RTL8723DS 
+  - 相关信息:设置->设备与服务->已配置->Bluetooth
+  - 识别方式:自动
+
+![img](images/cn/bluetooth-settings-cn.png)
+
+- WiFi  
+
+- - 型号:RTL8723DS
+  - 相关信息:设置->系统->网络->配置网络接口->WLAN0
+  - 识别方式:自动
+
+![img](images/cn/wifi-settings-cn.png)
+
+- Zigbee 协调器
+
+- - 型号: 00.21.05.0009 SOC EFR32MG21A020F768IM32-B SiliconLabs QFN32-4*4  （RAM 64kB,Flash 768kB）
+  - 相关信息:设置->系统->硬件->全部硬件->/dev/ttyS4
+  - 识别方式:使用ZHA或者Z2M
+
+![img](images/cn/zigbee-settings-cn.png)
+
+## 计划中
+
+- 扬声器
+- 麦克风
+- Matter Bridge Addon 
+- eWeLink Smart Home Addon
+
+
+
+## 感谢
+
+在此感谢 Darkxst ，该项目基于Darkxst 在github 上的 ha-operating-system 项目二次开发
