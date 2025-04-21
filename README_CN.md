@@ -4,11 +4,11 @@
 
 **Home Assistant For SONOFF iHost**
 
-## Home Assistant For Sonoff iHost
+## Home Assistant For SONOFF iHost
 
 ## 操作前必读
 
-- 一台iHost 且 iHost 系统版本需至少为 V2.5.1
+- 一台 iHost 且 iHost 系统版本需至少为 V2.5.1
 - 建议使用[一个 Application Class 2](https://www.sdcard.org/developers/overview/application/index.html) 的 SD Card。检查卡上的标签 A2，A2 类卡的性能更好，尤其是在小型读写操作中，更适合主机应用程序，SD Card 存储空间至少 32 GB
 - iHost 处理器为32位，无法下载和安装Home Assistant 中支持 64 位架构的 Add-on ，如：Node-RED 、Studio Code Server 等 Add-on 
 
@@ -25,11 +25,13 @@
 ### 所需软件
 
 - SD Card 烧录工具：[Balena Etcher](https://etcher.balena.io/) 或 [Raspberry Pi Imager](https://www.raspberrypi.com/software/) 等 
-- 可在 iHost 上运行的 Home Assistant， 访问 github项目：  [iHost-Open-Source-Porject](https://github.com/iHost-Open-Source-Project/ha-operating-system/releases)，下载最新的镜像文件
+- 可在 iHost 上运行的 Home Assistant， 访问 github项目：  [iHost-Open-Source-Porject](https://github.com/iHost-Open-Source-Project/ha-operating-system/releases)，下载最新的镜像文件.只有从  iHost-Open-Source-Porject 项目下载的HA镜像包才可以在iHost中使用
 
 ![img](images/cn/ha-release-page.png)
 
 ### 操作步骤
+
+推荐使用 [Balena Etcher](https://etcher.balena.io/) 或 [Raspberry Pi Imager](https://www.raspberrypi.com/software/) 烧录镜像，二者选其一即可
 
 #### Balena Etcher
 
@@ -81,8 +83,6 @@
 
 - 开始将下载的"HA over iHost"镜像文件烧录到 SD Card中，烧录过程中请不要操作 SD Card
 
-![img](images/cn/boot-blue-light.gif)
-
 ## 在 iHost 中启动 Home Assistant
 
 ### (可选) Zigbee 设备迁移
@@ -94,12 +94,18 @@
 - 待烧录完成后，取出 SD Card 并插入iHost SD Card 卡槽
 - 给 iHost 连接网线并上电，在通电同时不断按下静音按键 ♪ ，直至 iHost 的灯条出现蓝色呼吸，系统将开始改变为 SD Card 卡上的 Home Assistant；
 
-![img](images/cn/boot-failure.gif)
+
+![img](images/cn/boot-blue-light.gif)
 
 - 在看到蓝色呼吸灯的十分钟内，您将能够访问您的新 Home Assistant，第一次启动需要的时间会长一点
 
-- - 在桌面系统的浏览器中，输入 [homeassistant.local：8123](http://homeassistant.local:8123/)
-  - Note  注意：如果您运行的是较旧的 Windows 版本或具有更严格的网络配置，则可能需要在 [homeassistant：8123](http://homeassistant:8123/) 或 `http://X.X.X.X:8123` 访问 Home Assistant（请将 X.X.X.X 替换为您的 Raspberry Pi 的 IP 地址）
+- 在桌面系统的浏览器中，输入 [homeassistant.local：8123](http://homeassistant.local:8123/)
+
+  *注意*：
+  - *如果您运行的是较旧的 Windows 版本或具有更严格的网络配置，则可能需要在 [homeassistant：8123](http://homeassistant:8123/) 或 `http://X.X.X.X:8123` 访问 Home Assistant（请将 X.X.X.X 替换为您的 iHost 的 IP 地址）*
+  - *在启动过程中可使用 http://<HA_IP or HA_DOMAIN>:4357（这是 Supervisor 的诊断接口）， 确认 Supervisor 是否有起来，因为在 Supervisor 启动过程中会去拉取一些镜像，这需要一点时间； 当确认Supervisor启动成功后，HA core 还需要一定时间启动，按照我们实测正常情况大约1分钟左右能进入，这可以作为一个参考值。*
+  - *等待很长时间没有访问成功，你可以通过 ping iHost 的 ip 来检查*
+  - *在整个使用过程中为了避免出现未知问题，导致系统无法正常启动，切勿随意断开电源。 你可以通过长按（按住不放等待10s）iHost 顶部的电源按键来关闭 iHost , 在关机的状态下单击电源按键来开启 iHost*
 
 ### 启动失败
 
@@ -149,7 +155,7 @@
 
 - Zigbee 协调器
 
-- - 型号: 00.21.05.0009 SOC EFR32MG21A020F768IM32-B SiliconLabs QFN32-4*4  （RAM 64kB,Flash 768kB）
+- - 型号: SOC EFR32MG21A020F768IM32-B SiliconLabs QFN32-4*4  （RAM 64kB,Flash 768kB）
   - 相关信息:设置->系统->硬件->全部硬件->/dev/ttyS4
   - 识别方式:使用ZHA或者Z2M
 

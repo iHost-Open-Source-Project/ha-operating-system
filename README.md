@@ -10,7 +10,7 @@
 
 - A SONOFF iHost is required. 
 - Ensure your iHost system version is 2.5.1 or later.
-- An [Application Class 2](Application Class 2) (A2) card, with a minimum capacity of 32GB, is recommended for better performance, especially on small read&write operations.
+- An (Application Class 2) (A2) card, with a minimum capacity of 32GB, is recommended for better performance, especially on small read&write operations.
 - As iHost is based on a 32-bit processor, some Home Assistant features may not be compatible.
 
 ![img](images/en/ihost-device.png)![img](images/en/ihost-ports.png)
@@ -25,11 +25,13 @@
 ### Required Software
 
 - Micro SD card flash tool: [Balena Etcher](https://etcher.balena.io/) or [Raspberry Pi Imager](https://www.raspberrypi.com/software/), etc.
-- Visit the GitHub project for the HA over iHost corresponding image: [iHost-Open-Source-Project](https://github.com/iHost-Open-Source-Project/ha-operating-system/releases).
+- Visit the GitHub project for the HA over iHost corresponding image: [iHost-Open-Source-Project](https://github.com/iHost-Open-Source-Project/ha-operating-system/releases).Only the HA over iHost image downloaded from this project is supported.
 
 ![img](images/en/ha-release-page.png)
 
 ### **Flashing** HA Over iHost Image **to Micro SD Card**
+
+Using Balena Etcher or Raspberry Pi Imager to flash the image is highly recommended.
 
 #### Flash with *Balena Etcher*
 
@@ -108,7 +110,10 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 
 **Note:* 
 
-- If you are running an older version of Windows or have stricter network configurations, you may need to access Home Assistant using one of the following URLs: http://homeassistant:8123 or [http://X.X.X.X:8123](http://x.x.x.x:8123) *(replace X.X.X.X with the IP address of your Raspberry Pi)*
+- *If you are running an older version of Windows or have stricter network configurations, you may need to access Home Assistant using one of the following URLs: http://homeassistant:8123 or [http://X.X.X.X:8123](http://x.x.x.x:8123) *(replace X.X.X.X with the IP address of your iHost)*
+- *isit the Supervisor interface (http://<HA_IP or HA_DOMAIN>:4357), a diagnostic tool, to check if the Supervisor has initialized properly during the booting process. It may take some time to download the required image. Once the Supervisor starts, Home Assistant Core will continue to boot. The system is usually accessible within about 1 minute under normal conditions, based on the test results.*  
+- *If you still failed to access the Home Assistant interface after a long wait,  try pinging the iHost's IP address to check network connectivity.* 
+- *To avoid unexpected shutdowns or booting issues, do not unplug the power directly. If iHost fails to boot properly, try to press and hold the top power button for 10 seconds to force shutdown, then press it once to reboot.* 
 
 ### **Troubleshooting Boot Failures**
 
@@ -133,8 +138,8 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 
 #### *Notes*:
 
-- If multiple devices are running Home Assistant Operating System on your network, the hostname [homeassistant.local] may not resolve correctly. You can discover the correct IP address via your router's management interface or by broadcasting mDNS service [_home-assistant._tcp.].
-- If the last boot was from the SD Card, and the card is removed without switching back to eWeLink CUBE, the LED Side Strip will show a **RED** breathing light pattern, indicating Home Assistant Operating System has failed to boot on iHost.
+- *If multiple devices are running Home Assistant Operating System on your network, the hostname [homeassistant.local] may not resolve correctly. You can discover the correct IP address via your router's management interface or by broadcasting mDNS service [_home-assistant._tcp.].*
+- *If the last boot was from the SD Card, and the card is removed without switching back to eWeLink CUBE, the LED Side Strip will show a **RED** breathing light pattern, indicating Home Assistant Operating System has failed to boot on iHost.*
 
 ## **Hardware Resources**
 
@@ -164,7 +169,7 @@ The iHost Hardware Control add-on enables control of iHost's buttons and LED ind
 
 ### Zigbee Coordinator
 
-- **Chipset Model:** 00.21.05.0009 SOC EFR32MG21A020F768IM32-B SiliconLabs QFN32-4*4  （RAM 64kB,Flash 768kB）
+- **Chipset Model:** SOC EFR32MG21A020F768IM32-B SiliconLabs QFN32-4*4  （RAM 64kB,Flash 768kB）
 - **Path:** Settings > System > Hardware > All Hardware > /dev/ttyS4
 - **Discovery:** Via Zigbee Home Automation (ZHA) or Zigbee2MQTT
 
