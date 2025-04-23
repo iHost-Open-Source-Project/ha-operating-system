@@ -155,7 +155,7 @@
 
 - Zigbee 协调器
 
-- - 型号: SOC EFR32MG21A020F768IM32-B SiliconLabs QFN32-4*4  （RAM 64kB,Flash 768kB）
+- - 型号: EFR32MG21A020F768IM32-B（RAM 64kB,Flash 768kB）
   - 相关信息:设置->系统->硬件->全部硬件->/dev/ttyS4
   - 识别方式:使用ZHA或者Z2M
 

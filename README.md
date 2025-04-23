@@ -169,7 +169,7 @@ The iHost Hardware Control add-on enables control of iHost's buttons and LED ind
 
 ### Zigbee Coordinator
 
-- **Chipset Model:** SOC EFR32MG21A020F768IM32-B SiliconLabs QFN32-4*4  （RAM 64kB,Flash 768kB）
+- **Chipset Model:** EFR32MG21A020F768IM32-B（RAM 64kB,Flash 768kB）
 - **Path:** Settings > System > Hardware > All Hardware > /dev/ttyS4
 - **Discovery:** Via Zigbee Home Automation (ZHA) or Zigbee2MQTT
 
