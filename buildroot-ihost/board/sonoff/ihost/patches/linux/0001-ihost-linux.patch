@@ -96,10 +96,42 @@ index 3159f9a6a0f7..60a61ceb6a1d 100644
    '#address-cells':
      const: 2
 diff --git a/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi b/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
-index 9a87dc0d5f66..6f6033fd570f 100644
+index 9a87dc0d5f66..bc0ff9a8e3ee 100644
 --- a/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
 +++ b/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
-@@ -323,15 +323,15 @@ wifi_enable_h: wifi-enable-h {
+@@ -16,6 +16,18 @@ chosen {
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+ 
++	vcc5v0_host: vcc5v0-host-regulator {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&host_vbus_drv>;
++		regulator-name = "vcc5v0_host";
++		regulator-always-on;
++		regulator-boot-on;
++		vin-supply = <&vcc5v0_sys>;
++	};
++
+ 	vcc5v0_sys: regulator-vcc5v0-sys {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc5v0_sys";
+@@ -315,6 +327,12 @@ pmic_int_l: pmic-int-l {
+ 		};
+ 	};
+ 
++	usb {
++		host_vbus_drv: host-vbus-drv {
++			rockchip,pins = <0 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	wifi {
+ 		wifi_enable_h: wifi-enable-h {
+ 			rockchip,pins = <1 RK_PD0 RK_FUNC_GPIO &pcfg_pull_none>;
+@@ -323,15 +341,15 @@ wifi_enable_h: wifi-enable-h {
  };
  
  &pmu_io_domains {
@@ -121,8 +153,79 @@ index 9a87dc0d5f66..6f6033fd570f 100644
  	status = "okay";
  };
  
+@@ -342,18 +360,15 @@ &saradc {
+ 
+ &sdio {
+ 	bus-width = <4>;
+-	cap-sd-highspeed;
+ 	cap-sdio-irq;
+ 	keep-power-in-suspend;
+-	max-frequency = <50000000>;
++	max-frequency = <25000000>;
+ 	mmc-pwrseq = <&sdio_pwrseq>;
++	supports-sdio;
+ 	non-removable;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&sdmmc1_clk &sdmmc1_cmd &sdmmc1_bus4>;
+ 	rockchip,default-sample-phase = <90>;
+-	sd-uhs-sdr50;
+-	vmmc-supply = <&vcc3v3_sd>;
+-	vqmmc-supply = <&vcc_1v8>;
+ 	status = "okay";
+ };
+ 
+@@ -372,6 +387,24 @@ &sdmmc {
+ 	status = "okay";
+ };
+ 
++&u2phy0 {
++	status = "okay";
++	vup-gpios = <&gpio0 RK_PC1 GPIO_ACTIVE_LOW>;
++};
++
++&u2phy_otg {
++	status = "okay";
++};
++
++&u2phy1 {
++	status = "okay";
++};
++
++&u2phy_host {
++	status = "okay";
++	phy-supply = <&vcc5v0_host>;
++};
++
+ &uart0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&uart0_xfer &uart0_ctsn &uart0_rtsn>;
+@@ -389,6 +422,24 @@ bluetooth {
+ 	};
+ };
+ 
++&usbdrd {
++	status = "okay";
++};
++
++&usbdrd_dwc3 {
++	status = "okay";
++	dr_mode = "peripheral";
++	extcon = <&u2phy0>;
++};
++
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb_host0_ohci {
++	status = "okay";
++};
++
+ &uart2 {
+ 	status = "okay";
+ };
 diff --git a/arch/arm/boot/dts/rockchip/rv1126.dtsi b/arch/arm/boot/dts/rockchip/rv1126.dtsi
-index 434846b85c95..d4e1654c5bc4 100644
+index 434846b85c95..1503e597bf36 100644
 --- a/arch/arm/boot/dts/rockchip/rv1126.dtsi
 +++ b/arch/arm/boot/dts/rockchip/rv1126.dtsi
 @@ -158,6 +158,16 @@ qos_vop: qos@fe8a0180 {
@@ -142,7 +245,7 @@ index 434846b85c95..d4e1654c5bc4 100644
  	gic: interrupt-controller@feff0000 {
  		compatible = "arm,gic-400";
  		interrupt-controller;
-@@ -222,6 +232,19 @@ power-domain@RV1126_PD_VO {
+@@ -222,6 +232,18 @@ power-domain@RV1126_PD_VO {
  					 <&qos_iep>;
  				#power-domain-cells = <0>;
  			};
@@ -158,12 +261,11 @@ index 434846b85c95..d4e1654c5bc4 100644
 +				<&qos_usb_otg>;
 +				#power-domain-cells = <0>;
 +			};
-+
  		};
  	};
  
-@@ -444,6 +467,51 @@ pwm11: pwm@ff550030 {
- 		status = "disabled";
+@@ -386,6 +408,52 @@ dmac: dma-controller@ff4e0000 {
+ 		clock-names = "apb_pclk";
  	};
  
 +	u2phy0: usb2phy@ff4c0000 {
@@ -211,20 +313,21 @@ index 434846b85c95..d4e1654c5bc4 100644
 +			status = "disabled";
 +		};
 +	};
- 	uart0: serial@ff560000 {
- 		compatible = "rockchip,rv1126-uart", "snps,dw-apb-uart";
- 		reg = <0xff560000 0x100>;
-@@ -523,6 +591,60 @@ uart5: serial@ff5a0000 {
- 		reg-io-width = <4>;
++
+ 	i2c3: i2c@ff520000 {
+ 		compatible = "rockchip,rv1126-i2c", "rockchip,rk3399-i2c";
+ 		reg = <0xff520000 0x1000>;
+@@ -524,6 +592,61 @@ uart5: serial@ff5a0000 {
  		status = "disabled";
  	};
+ 
 +	usbdrd: usb0 {
 +		compatible = "rockchip,rv1126-dwc3", "rockchip,rk3399-dwc3";
 +		#address-cells = <1>;
 +		#size-cells = <1>;
 +		ranges;
 +		clocks = <&cru CLK_USBOTG_REF>, <&cru ACLK_USBOTG>,
-+			 <&cru HCLK_PDUSB>;
++			<&cru HCLK_PDUSB>;
 +		clock-names = "ref_clk", "bus_clk", "hclk";
 +		resets = <&cru SRST_USBOTG_A>;
 +		reset-names = "usb3-otg";
@@ -254,7 +357,7 @@ index 434846b85c95..d4e1654c5bc4 100644
 +		reg = <0xffe00000 0x10000>;
 +		interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
 +		clocks = <&cru HCLK_USBHOST>, <&cru HCLK_USBHOST_ARB>,
-+			 <&u2phy1>;
++			<&u2phy1>;
 +		phys = <&u2phy_host>;
 +		phy-names = "usb";
 +		power-domains = <&power RV1126_PD_USB>;
@@ -266,15 +369,16 @@ index 434846b85c95..d4e1654c5bc4 100644
 +		reg = <0xffe10000 0x10000>;
 +		interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
 +		clocks = <&cru HCLK_USBHOST>, <&cru HCLK_USBHOST_ARB>,
-+			 <&u2phy1>;
++			<&u2phy1>;
 +		phys = <&u2phy_host>;
 +		phy-names = "usb";
 +		power-domains = <&power RV1126_PD_USB>;
 +		status = "disabled";
 +	};
- 
++
  	saradc: adc@ff5e0000 {
  		compatible = "rockchip,rv1126-saradc", "rockchip,rk3399-saradc";
+ 		reg = <0xff5e0000 0x100>;
 diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
 index e7f55c021e56..280a4a0a2a57 100644
 --- a/drivers/extcon/extcon.c
@@ -293,7 +397,7 @@ index e7f55c021e56..280a4a0a2a57 100644
  	[EXTCON_CHG_USB_SDP] = {
  		.type = EXTCON_TYPE_CHG | EXTCON_TYPE_USB,
 diff --git a/drivers/phy/rockchip/Kconfig b/drivers/phy/rockchip/Kconfig
-index 2f7a05f21dc5..487743b579ff 100644
+index 2f7a05f21dc5..c016774336fc 100644
 --- a/drivers/phy/rockchip/Kconfig
 +++ b/drivers/phy/rockchip/Kconfig
 @@ -74,6 +74,17 @@ config PHY_ROCKCHIP_NANENG_COMBO_PHY
@@ -301,15 +405,15 @@ index 2f7a05f21dc5..487743b579ff 100644
  	  combo PHY with NaNeng IP block.
  
 +config PHY_ROCKCHIP_NANENG_USB2
-+        tristate "Rockchip NANENG USB2PHY Driver"
-+        depends on (ARCH_ROCKCHIP || COMPILE_TEST) && OF
-+        depends on COMMON_CLK
-+        select EXTCON
-+        depends on USB_SUPPORT
-+        select GENERIC_PHY
-+        select USB_COMMON
-+        help
-+          Support for Rockchip USB2.0 PHY with NANENG IP block.
++    tristate "Rockchip NANENG USB2PHY Driver"
++    depends on (ARCH_ROCKCHIP || COMPILE_TEST) && OF
++    depends on COMMON_CLK
++    select EXTCON
++    depends on USB_SUPPORT
++    select GENERIC_PHY
++    select USB_COMMON
++    help
++      Support for Rockchip USB2.0 PHY with NANENG IP block.
 +
  config PHY_ROCKCHIP_PCIE
  	tristate "Rockchip PCIe PHY Driver"
