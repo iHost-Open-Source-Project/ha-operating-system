@@ -10,3 +10,6 @@ output*/
 
 # vscode generated files
 .vscode*
+
+# local history files
+*.history
