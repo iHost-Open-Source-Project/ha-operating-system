@@ -96,7 +96,7 @@ index 3159f9a6a0f7..60a61ceb6a1d 100644
    '#address-cells':
      const: 2
 diff --git a/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi b/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
-index 9a87dc0d5f66..bc0ff9a8e3ee 100644
+index 9a87dc0d5f66..e1077309bd2a 100644
 --- a/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
 +++ b/arch/arm/boot/dts/rockchip/rv1126-sonoff-ihost.dtsi
 @@ -16,6 +16,18 @@ chosen {
@@ -224,8 +224,17 @@ index 9a87dc0d5f66..bc0ff9a8e3ee 100644
  &uart2 {
  	status = "okay";
  };
+@@ -404,3 +455,7 @@ &uart4 {
+ 	pinctrl-0 = <&uart4m2_xfer>;
+ 	status = "okay";
+ };
++
++&optee {
++	status = "okay";
++};
+\ No newline at end of file
 diff --git a/arch/arm/boot/dts/rockchip/rv1126.dtsi b/arch/arm/boot/dts/rockchip/rv1126.dtsi
-index 434846b85c95..1503e597bf36 100644
+index 434846b85c95..b750780ed82e 100644
 --- a/arch/arm/boot/dts/rockchip/rv1126.dtsi
 +++ b/arch/arm/boot/dts/rockchip/rv1126.dtsi
 @@ -158,6 +158,16 @@ qos_vop: qos@fe8a0180 {
@@ -379,6 +388,21 @@ index 434846b85c95..1503e597bf36 100644
  	saradc: adc@ff5e0000 {
  		compatible = "rockchip,rv1126-saradc", "rockchip,rk3399-saradc";
  		reg = <0xff5e0000 0x100>;
+@@ -769,6 +892,14 @@ gpio4: gpio@ff650000 {
+ 			#interrupt-cells = <2>;
+ 		};
+ 	};
++
++	firmware {
++		optee: optee {
++			compatible = "linaro,optee-tz";
++			method = "smc";
++			status = "disabled";
++		};
++	};
+ };
+ 
+ #include "rv1126-pinctrl.dtsi"
 diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
 index e7f55c021e56..280a4a0a2a57 100644
 --- a/drivers/extcon/extcon.c
