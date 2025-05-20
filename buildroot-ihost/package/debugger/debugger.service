@@ -1,0 +1,9 @@
+[Unit]
+Description=Coolkit debugger script
+
+[Service]
+Type=simple
+ExecStart=node /home/root/debugger.js
+
+[Install]
+WantedBy=multi-user.target

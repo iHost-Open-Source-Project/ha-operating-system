@@ -1,0 +1,5 @@
+config BR2_PACKAGE_DEBUGGER
+    bool "debugger support"
+    depends on BR2_PACKAGE_NODEJS
+    help
+      debugger support
