@@ -185,6 +185,7 @@ The iHost Hardware Control add-on enables control of iHost's buttons and LED ind
 ## Upcoming Add-ons
 - OpenThread Border Router
 - Matter Server
+- eWeLink Remote
 
 ## Acknowledgement
 
