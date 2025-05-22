@@ -175,14 +175,16 @@ The iHost Hardware Control add-on enables control of iHost's buttons and LED ind
 
 ![img](images/en/zigbee-settings.png)
 
+## Supported Add-ons
+- [iHost Hardware Control](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-hardware-control/README.md)
+- [SONOFF Dongle Flasher For iHost](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-sonoff-dongle-flasher/README.md)
+- [Matter Bridge for iHost](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-matter-bridge-addon/README.md)
+- [Node-RED](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-node-red/README.md)
+- [ESPHome Device Builder](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-esphome/README.md)
 
-
-## Upcoming Hardware Support
-
-- Speaker
-- Microphone
-- Matter Bridge Add-on
-- eWeLink Smart Home Add-on
+## Upcoming Add-ons
+- OpenThread Border Router
+- Matter Server
 
 ## Acknowledgement
 
