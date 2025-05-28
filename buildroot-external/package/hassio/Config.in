@@ -18,6 +18,11 @@ config BR2_PACKAGE_HASSIO_MACHINE
 	help
 	  Machine to pull containers for (used for landing page).
 
+config BR2_PACKAGE_HASSIO_FULL_CORE
+	bool "Full Core"
+	help
+	  Build the full Core image.
+
 choice
 	prompt "Default Channel"
 	default BR2_PACKAGE_HASSIO_CHANNEL_STABLE
