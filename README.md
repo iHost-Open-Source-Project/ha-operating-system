@@ -19,7 +19,8 @@
 
 ### Required Hardware
 
-- An A2 Micro SD card (32GB or larger)
+- An (Application Class 2) (A2) card, with a minimum capacity of 32GB, is recommended for better performance, especially on small read&write operations.
+We would suggest using a TF card from SanDisk, Kingston, or Samsung. We have been internally using these brand cards for testing.
 - An SD card reader: any standard USB card reader will work if your laptop doesn't have a built-in SD card reader.
 
 ### Required Software
@@ -101,7 +102,7 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 
 1. Insert the pre-flashed Micro SD card into the iHost SD Card slot.
 2. Connect iHost to a network cable and power it on.
-3. Repeatedly press the mute button (♪) on the top until the LED Side Strip of iHost enters a **BLUE** breathing light pattern, indicating the system running on iHost is changing to Home Assistant flashed onto the SD card;
+3. Within **5 seconds after powering on**, repeatedly press the **Mute** button (♪) on the top of the iHost until the **LED Side Strip** enters a **BLUE** breathing light pattern. This indicates that the system is switching to the Home Assistant OS flashed onto the SD card.
 
 ![img](images/en/boot-blue-light.gif)
 
