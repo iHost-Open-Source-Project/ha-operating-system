@@ -1,11 +1,19 @@
 #!/bin/bash
 
 function hassos_image_name() {
-    echo "${BINARIES_DIR}/${HASSOS_ID}_${BOARD_ID}-$(hassos_version).${1}"
+    if [ "${BOARD_ID}" == "ihost" ] && grep -q ^BR2_PACKAGE_HASSIO_FULL_CORE=y "${BASE_DIR}/.config"; then
+        echo "${BINARIES_DIR}/${HASSOS_ID}_${BOARD_ID}-$(hassos_version)-full.${1}"
+    else
+        echo "${BINARIES_DIR}/${HASSOS_ID}_${BOARD_ID}-$(hassos_version).${1}"
+    fi
 }
 
 function hassos_image_basename() {
-    echo "${BINARIES_DIR}/${HASSOS_ID}_${BOARD_ID}-$(hassos_version)"
+    if [ "${BOARD_ID}" == "ihost" ] && grep -q ^BR2_PACKAGE_HASSIO_FULL_CORE=y "${BASE_DIR}/.config"; then
+        echo "${BINARIES_DIR}/${HASSOS_ID}_${BOARD_ID}-$(hassos_version)-full"
+    else
+        echo "${BINARIES_DIR}/${HASSOS_ID}_${BOARD_ID}-$(hassos_version)"
+    fi
 }
 
 function hassos_rauc_compatible() {

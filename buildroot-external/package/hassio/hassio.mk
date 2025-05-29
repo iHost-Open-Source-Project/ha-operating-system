@@ -43,11 +43,7 @@ endef
 HASSIO_INSTALL_IMAGES = YES
 
 define HASSIO_INSTALL_IMAGES_CMDS
-	if [ "$(BR2_PACKAGE_HASSIO_FULL_CORE)" = "y" ]; then \
-		$(BR2_EXTERNAL_HASSOS_PATH)/package/hassio/create-data-partition.sh "$(@D)" "$(BINARIES_DIR)" "$(HASSIO_VERSION_CHANNEL)" "5120M"; \
-	else \
-		$(BR2_EXTERNAL_HASSOS_PATH)/package/hassio/create-data-partition.sh "$(@D)" "$(BINARIES_DIR)" "$(HASSIO_VERSION_CHANNEL)"; \
-	fi
+	$(BR2_EXTERNAL_HASSOS_PATH)/package/hassio/create-data-partition.sh "$(@D)" "$(BINARIES_DIR)" "$(HASSIO_VERSION_CHANNEL)" "$(BR2_PACKAGE_HASSIO_DATA_IMAGE_SIZE)";
 endef
 
 $(eval $(generic-package))
