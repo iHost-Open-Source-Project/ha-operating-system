@@ -133,6 +133,31 @@
 - 若您的局域网中有超过一台运行 HomeAssistant 设备，则无法通过 homeassistant.local 域名进行访问，需通过路由器后台或 mDNS 广播[_home-assistant._tcp.]查找 IP 地址
 - 若您的 iHost 上次启动为 SD Card，当您移除 SD Card 且没有切换为 eWeLink CUBE 系统时，灯条灯效将表现为红色呼吸
 
+## CoreBox
+
+CoreBox 是一款为 SONOFF iHost 快速启动 Home Assistant 而设计的镜像版本，内置了最新版的 Home Assistant Core（2025.05.03）。
+
+使用 CoreBox，无需在首次安装时等待设备从 GitHub 下载 HA Core。系统将直接从内置版本启动，3 分钟内即可完成启动过程。CoreBox 彻底摆脱了对网络连接的依赖，即使在离线环境中也能完成安装。系统启动后，你仍然可以通过正常方式升级到更新的 HA Core 版本。
+
+### 为什么选择 CoreBox？
+
+我们始终在倾听用户的声音。许多用户反馈，在首次安装 HA over iHost 的过程中，由于网络不稳定，尤其是在下载 HA Core 阶段，容易导致安装失败或等待时间过长。这种体验令人沮丧，也使不少首次尝试的用户感到挫败。
+
+即使我们提供在线支持，排查网络问题并指导安装流程也经常需要耗费较长时间，增加了用户和支持团队的负担。
+
+因此，我们推出了 CoreBox —— 一个真正从用户体验出发的解决方案。
+
+使用 CoreBox，你将获得：
+	•	快速且可靠的安装体验
+	•	避免因网络问题导致的延迟或失败
+	•	更加安心稳定的 Home Assistant 启动体验，无论何时何地
+
+### 内置的 HA Core 可以更新吗？—— 可以！
+
+当系统通过内置版本（2025.05.03）启动后，Home Assistant 会自动检测是否有更新版本可用。
+你可以像正常安装一样，通过「设置 > 系统 > 更新」页面完成 HA Core 的升级。
+
+
 ## 硬件资源
 
 在 iHost 上成功启动 Home Assistant 后，您可以在 Home Assistant 中使用 iHost 提供的硬件资源。
