@@ -25,10 +25,17 @@ We would suggest using a TF card from SanDisk, Kingston, or Samsung. We have bee
 
 ### Required Software
 
+
 - Micro SD card flash tool: [Balena Etcher](https://etcher.balena.io/) or [Raspberry Pi Imager](https://www.raspberrypi.com/software/), etc.
 - Visit the GitHub project for the HA over iHost corresponding image: [iHost-Open-Source-Project](https://github.com/iHost-Open-Source-Project/ha-operating-system/releases).Only the HA over iHost image downloaded from this project is supported.
 
 ![img](images/en/ha-release-page.png)
+
+> For a faster and more reliable first-time setup—especially in environments without internet access—we recommend using the **CoreBox image**.  
+> It comes with the full Home Assistant Core (2025.05.03) pre-installed, allowing Home Assistant to boot in under 3 minutes.  
+> Learn more in the [CoreBox](#corebox) section.
+
+![img](images/en/ha-release-page-corebox.png)
 
 ### **Flashing** HA Over iHost Image **to Micro SD Card**
 
@@ -141,6 +148,29 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 
 - *If multiple devices are running Home Assistant Operating System on your network, the hostname [homeassistant.local] may not resolve correctly. You can discover the correct IP address via your router's management interface or by broadcasting mDNS service [_home-assistant._tcp.].*
 - *If the last boot was from the SD Card, and the card is removed without switching back to eWeLink CUBE, the LED Side Strip will show a **RED** breathing light pattern, indicating Home Assistant Operating System has failed to boot on iHost.*
+
+## CoreBox
+CoreBox is a new HA over iHost image designed for rapid setup, featuring the latest HA Core version (2025.05.03) pre-intergrated.
+
+With CoreBox, you no longer need to wait during initial installation for the device to download HA Core from GitHub. Instead, you can directly boot from the built-in HA Core version, achieving startup within 3 minutes or even faster. CoreBox removes reliance on internet connectivity, allowing easy setup even in offline environments. You can still update to newer HA Core versions from within the system once it’s running.
+
+### Why CoreBox?
+We’ve been listening closely to your feedback.
+Many users reported that the original installation process of HA over iHost often failed due to poor or unstable internet, especially during the initial HA Core download. This not only caused frustration but also discouraged many first-time users from continuing.
+
+Even with our online support, troubleshooting network issues and walking through the installation process often took longer than expected — for both users and our team.
+
+So we built CoreBox — a solution designed from the user’s perspective.
+
+With CoreBox, you get:
+- A quick and reliable setup experience
+- No more delays or failed installations due to network issues
+- Confidence that your Home Assistant will run smoothly — anytime, anywhere
+
+### Can I update the built-in HA Core?
+Yes!
+Once HA boots up with the built-in version (2025.5.3), Home Assistant will detect if a newer version is available.
+You can update HA Core as usual from the Settings > System > Updates page — just like a normal installation.
 
 ## **Hardware Resources**
 

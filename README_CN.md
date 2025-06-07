@@ -29,6 +29,12 @@
 
 ![img](images/cn/ha-release-page.png)
 
+> 为了获得更快速、更可靠的首次安装体验 —— 尤其在无网络环境下，我们推荐使用 **CoreBox 镜像**。  
+> 该镜像已预装完整的 Home Assistant Core（2025.05.03），系统启动时间可缩短至 3 分钟以内。  
+> 详细说明请参见下方的 [CoreBox](#corebox) 部分。
+
+![img](images/cn/ha-release-page-corebox.png)
+
 ### 操作步骤
 
 推荐使用 [Balena Etcher](https://etcher.balena.io/) 或 [Raspberry Pi Imager](https://www.raspberrypi.com/software/) 烧录镜像，二者选其一即可
