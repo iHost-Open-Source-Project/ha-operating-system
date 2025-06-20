@@ -213,10 +213,11 @@ The iHost Hardware Control add-on enables control of iHost's buttons and LED ind
 - [Node-RED](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-node-red/README.md)
 - [ESPHome Device Builder](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-esphome/README.md)
 - [eWeLink-Remote](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-ewelink-remote/README.md)
+- [Matter Server](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-matter-server/README.md)
 
 ## Upcoming Add-ons
 - OpenThread Border Router
-- Matter Server
+
 
 ## Acknowledgement
 
