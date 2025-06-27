@@ -207,9 +207,10 @@ CoreBox 是一款为 SONOFF iHost 快速启动 Home Assistant 而设计的镜像
 - [ESPHome Device Builder](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-esphome/README.md)
 - [eWeLink-Remote](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-ewelink-remote/README.md)
 - [Matter Server](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-matter-server/README.md)
+- [OpenThread Border Router](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-openthread-border-router/README.md)
 
 ## 即将支持 Add-ons
-- OpenThread Border Router
+- Silicon Labs Multiprotocol
 
 
 ## 感谢
