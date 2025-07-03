@@ -215,9 +215,7 @@ The iHost Hardware Control add-on enables control of iHost's buttons and LED ind
 - [eWeLink-Remote](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-ewelink-remote/README.md)
 - [Matter Server](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-matter-server/README.md)
 - [OpenThread Border Router](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-openthread-border-router/README.md)
-
-## Upcoming Add-ons
-- Silicon Labs Multiprotocol
+- [Silicon Labs Multiprotocol](https://github.com/iHost-Open-Source-Project/hassio-ihost-addon/blob/master/hassio-ihost-silabs-multiprotocol/README.md)
 
 ## Acknowledgement
 
