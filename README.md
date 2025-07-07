@@ -119,7 +119,7 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 **Note:* 
 
 - *If you are running an older version of Windows or have stricter network configurations, you may need to access Home Assistant using one of the following URLs: http://homeassistant:8123 or [http://X.X.X.X:8123](http://x.x.x.x:8123) *(replace X.X.X.X with the IP address of your iHost)*
-- *isit the Supervisor interface (http://<HA_IP or HA_DOMAIN>:4357), a diagnostic tool, to check if the Supervisor has initialized properly during the booting process. It may take some time to download the required image. Once the Supervisor starts, Home Assistant Core will continue to boot. The system is usually accessible within about 1 minute under normal conditions, based on the test results.*  
+- *Visit the Supervisor interface (http://<HA_IP or HA_DOMAIN>:4357), a diagnostic tool, to check if the Supervisor has initialized properly during the booting process. It may take some time to download the required image. Once the Supervisor starts, Home Assistant Core will continue to boot. The system is usually accessible within about 1 minute under normal conditions, based on the test results.*  
 - *If you still failed to access the Home Assistant interface after a long wait,  try pinging the iHost's IP address to check network connectivity.* 
 - *To avoid unexpected shutdowns or booting issues, do not unplug the power directly. If iHost fails to boot properly, try to press and hold the top power button for 10 seconds to force shutdown, then press it once to reboot.* 
 
