@@ -109,7 +109,7 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 
 1. Insert the pre-flashed Micro SD card into the iHost SD Card slot.
 2. Connect iHost to a network cable and power it on.
-3. Within **5 seconds after powering on**, repeatedly press the **Mute** button (♪) on the top of the iHost until the **LED Side Strip** enters a **BLUE** breathing light pattern. This indicates that the system is switching to the Home Assistant OS flashed onto the SD card.
+3. **Within 5 seconds after powering on, quickly and repeatedly press the Mute button (♪) on the top of the iHost until the LED Side Strip enters a BLUE breathing light pattern.** This indicates that the system is switching to the Home Assistant OS flashed onto the SD card.
 
 ![img](images/en/boot-blue-light.gif)
 
