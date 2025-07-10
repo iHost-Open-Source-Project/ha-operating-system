@@ -4,10 +4,10 @@ BUILDROOT=$(BUILDDIR)/buildroot
 BUILDROOT_EXTERNAL=$(BUILDDIR)/buildroot-external
 DEFCONFIG_DIR = $(BUILDROOT_EXTERNAL)/configs
 BUILDROOT_IHOST_EXTERNAL=$(BUILDDIR)/buildroot-ihost
-DEFCOFNIG_IHOST_DIR = $(BUILDROOT_IHOST_EXTERNAL)/configs
+DEFCONFIG_IHOST_DIR = $(BUILDROOT_IHOST_EXTERNAL)/configs
 
-TARGETS := $(notdir $(patsubst %_defconfig,%,$(wildcard $(DEFCONFIG_DIR)/*_defconfig $(DEFCOFNIG_IHOST_DIR)/*_defconfig)))
-TARGETS_CONFIG := $(notdir $(patsubst %_defconfig,%-config,$(wildcard $(DEFCONFIG_DIR)/*_defconfig $(DEFCOFNIG_IHOST_DIR)/*_defconfig)))
+TARGETS := $(notdir $(patsubst %_defconfig,%,$(wildcard $(DEFCONFIG_DIR)/*_defconfig $(DEFCONFIG_IHOST_DIR)/*_defconfig)))
+TARGETS_CONFIG := $(notdir $(patsubst %_defconfig,%-config,$(wildcard $(DEFCONFIG_DIR)/*_defconfig $(DEFCONFIG_IHOST_DIR)/*_defconfig)))
 
 # Set O variable if not already done on the command line
 ifneq ("$(origin O)", "command line")
@@ -38,7 +38,7 @@ default:
 	$(MAKE) -C $(BUILDROOT) O=$(O) BR2_EXTERNAL=$(BUILDROOT_IHOST_EXTERNAL):$(BUILDROOT_EXTERNAL)
 
 $(TARGETS_CONFIG): %-config:
-	@if [ -f $(O)/.config ] && (! grep -q 'BR2_DEFCONFIG="$(DEFCONFIG_DIR)/$*_defconfig"' $(O)/.config || ! grep -q 'BR2_DEFCONFIG="$(DEFCONFIG_IHOST_DIR)/$*_defconfig"' $(O)/.config); then \
+	@if [ -f $(O)/.config ] && (! grep -q 'BR2_DEFCONFIG="$(DEFCONFIG_DIR)/$*_defconfig"' $(O)/.config && ! grep -q 'BR2_DEFCONFIG="$(DEFCONFIG_IHOST_DIR)/$*_defconfig"' $(O)/.config); then \
 		echo "$(COLOR_WARN)WARNING: Output directory '$(O)' already contains files for another target!$(TERM_RESET)"; \
 		echo "         Before running build for a different target, run 'make distclean' first."; \
 		echo ""; \
