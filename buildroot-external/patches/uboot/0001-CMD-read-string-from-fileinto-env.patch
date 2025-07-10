@@ -1,21 +1,8 @@
-From 4af7bcd52d0b6c8df3129a2f35035c6a1b62848d Mon Sep 17 00:00:00 2001
-From: Pascal Vizeli <pvizeli@syshack.ch>
-Date: Sun, 5 Aug 2018 20:43:03 +0000
-Subject: [PATCH] CMD: read string from fileinto env
-
-Signed-off-by: Pascal Vizeli <pvizeli@syshack.ch>
----
- cmd/Kconfig   |  5 +++++
- cmd/Makefile  |  1 +
- cmd/fileenv.c | 45 +++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 51 insertions(+)
- create mode 100644 cmd/fileenv.c
-
 diff --git a/cmd/Kconfig b/cmd/Kconfig
-index 1d7ddb4ed36..0c0ce749000 100644
+index df6d71c1..6cda4909 100644
 --- a/cmd/Kconfig
 +++ b/cmd/Kconfig
-@@ -1792,6 +1792,11 @@ config CMD_XXD
+@@ -1689,6 +1689,11 @@ config CMD_XXD
  	help
  	  Print file as hexdump to standard output
  
@@ -26,22 +13,22 @@ index 1d7ddb4ed36..0c0ce749000 100644
 +
  endmenu
  
- if NET || NET_LWIP
+ menu "Android support commands"
 diff --git a/cmd/Makefile b/cmd/Makefile
-index d1f369deec0..7ad9d3720c0 100644
+index 9a6790cc..a521653f 100644
 --- a/cmd/Makefile
 +++ b/cmd/Makefile
-@@ -170,6 +170,7 @@ obj-$(CONFIG_CMD_SHA1SUM) += sha1sum.o
+@@ -164,6 +164,7 @@ obj-$(CONFIG_CMD_SHA1SUM) += sha1sum.o
  obj-$(CONFIG_CMD_SEAMA) += seama.o
  obj-$(CONFIG_CMD_SETEXPR) += setexpr.o
  obj-$(CONFIG_CMD_SETEXPR_FMT) += printf.o
 +obj-$(CONFIG_CMD_FILEENV) += fileenv.o
  obj-$(CONFIG_CMD_SPI) += spi.o
  obj-$(CONFIG_CMD_STRINGS) += strings.o
- obj-$(CONFIG_CMD_SMBIOS) += smbios.o
+ obj-$(CONFIG_CMD_SMC) += smccc.o
 diff --git a/cmd/fileenv.c b/cmd/fileenv.c
 new file mode 100644
-index 00000000000..4154c8df0f0
+index 00000000..a223dc06
 --- /dev/null
 +++ b/cmd/fileenv.c
 @@ -0,0 +1,45 @@
@@ -90,3 +77,4 @@ index 00000000000..4154c8df0f0
 +	"<interface> <dev:part> <addr> <filename> <envname>\n"
 +	"    - Read file from fat32 and store it as env."
 +);
+\ No newline at end of file
