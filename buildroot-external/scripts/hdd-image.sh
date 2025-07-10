@@ -16,7 +16,10 @@ function create_disk_image() {
     export GENIMAGE_INPUTPATH="${BINARIES_DIR}"
     export GENIMAGE_OUTPUTPATH="${BINARIES_DIR}"
     export GENIMAGE_TMPPATH="${BUILD_DIR}/genimage.tmp"
-
+    if [ "${BOARD_ID}" == "ihost" ]; then
+        DATA_SIZE=$(data_size_fixup)
+        DISK_SIZE=$(disk_size_fixup)
+    fi
     # variables from meta file
     export DISK_SIZE BOOTLOADER KERNEL_FILE PARTITION_TABLE_TYPE BOOT_SIZE BOOT_SPL BOOT_SPL_SIZE
     # variables used in raucb manifest template
