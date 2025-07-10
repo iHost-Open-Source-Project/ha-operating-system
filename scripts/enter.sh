@@ -16,11 +16,6 @@ if [ ! -f buildroot/Makefile ]; then
   git submodule update --init
 fi
 
-# fix compile-docker-container boot error
-if [ ! -f $(pwd)/output/images/rootfs.img ]; then
-  mkdir -p $(pwd)/output
-fi
-
 # Make sure loop devices are present before starting the container
 sudo losetup -f > /dev/null
 
