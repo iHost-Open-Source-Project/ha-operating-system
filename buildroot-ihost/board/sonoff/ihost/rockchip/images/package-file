@@ -1,0 +1,14 @@
+# NAME		Relative path
+#
+#HWDEF		HWDEF
+package-file	package-file
+bootloader	MiniLoaderAll.bin
+parameter	parameter.txt
+uboot		uboot.img
+hassos-boot     boot.img
+hassos-kernel0		kernel.img
+hassos-system0		rootfs.img
+hassos-kernel1		kernel.img
+hassos-system1		rootfs.img
+hassos-overlay		overlay.img
+hassos-data 		data.img
