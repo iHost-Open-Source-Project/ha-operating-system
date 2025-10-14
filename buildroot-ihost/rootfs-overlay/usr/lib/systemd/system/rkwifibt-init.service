@@ -1,0 +1,14 @@
+[Unit]
+Description=Init Rockchip Wifi/BT
+DefaultDependencies=no
+After=local-fs.target
+Before=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/wifibt-init.sh start
+ExecStop=/usr/libexec/wifibt-init.sh stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target

@@ -1,1 +1,2 @@
 source "$BR2_EXTERNAL_IHOST_PATH/package/matter/Config.in"
+source "$BR2_EXTERNAL_IHOST_PATH/package/rtk_hciattach/Config.in"
