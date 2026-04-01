@@ -124,14 +124,17 @@
 
 ### 切换回 eWeLink CUBE
 
-- 若需要切换回 eWeLink CUBE，重复此通电及按键操作（在通电后3s内不断按下静音按键）即可，切换 eWeLink-CUBE 系统成功后，灯条灯效从蓝色呼吸改为红色跑马灯
+要切换回 eWeLink CUBE，请按照以下步骤操作：
+1. 断电重启：先将iHost的电源断开，然后重新上电。
+2. 请在设备重新上电后启动的3秒内，连续多次短按设备顶部的静音键（♪按钮），直到设备侧面的LED灯带变为红色流动光模式，这表明系统正在切换回eWeLink CUBE，请耐心等待启动完成。
 
 ![img](images/cn/switch-back.gif)
 
-注:
-
+注意事项：
 - 若您的局域网中有超过一台运行 HomeAssistant 设备，则无法通过 homeassistant.local 域名进行访问，需通过路由器后台或 mDNS 广播[_home-assistant._tcp.]查找 IP 地址
 - 若您的 iHost 上次启动为 SD Card，当您移除 SD Card 且没有切换为 eWeLink CUBE 系统时，灯条灯效将表现为红色呼吸
+- 如果开机 3秒后或多次按按钮后，LED 侧条没有显示蓝色呼吸灯模式而是显示红色呼吸灯模式，则说明切换回eWeLink CUBE系统失败
+- 如果LED 侧条指示灯从红色流动光模式→蓝色呼吸灯→红色流光灯，则说明从Home Assistant系统切换为CUBE系统失败，请按上面步骤重新进行操作
 
 ## CoreBox
 
