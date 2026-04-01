@@ -136,11 +136,10 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 - If you cannot access Home Assistant web interface within 10 minutes after the operations above, it may be due to an incorrectly flashed image. Try re-flashing the SD card or using a new one.
 
 ### Switching Back to eWeLink CUBE 
+To switch back to eWeLink CUBE, please follow the steps below:
 
-- To switch back to eWeLink CUBE, follow these steps:
-  1. Power cycle iHost.
-  2. Repeatedly single-press the mute button (♪) within 3 seconds.
-  3. The LED  Side Strip will switch to a **RED** flowing light pattern, confirming the system has switched back to eWeLink CUBE.
+1. Power cycle: Disconnect the iHost from power, then reconnect it.
+2. Within 3 seconds after the device powers back on, repeatedly press the mute button (♪) on the top of the device until the LED strip on the side shows a red flowing light pattern. This indicates that the system is switching back to eWeLink CUBE. Please wait patiently for the startup to complete.
 
 ![img](images/en/switch-back.gif)
 
@@ -148,6 +147,8 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 
 - *If multiple devices are running Home Assistant Operating System on your network, the hostname [homeassistant.local] may not resolve correctly. You can discover the correct IP address via your router's management interface or by broadcasting mDNS service [_home-assistant._tcp.].*
 - *If the last boot was from the SD Card, and the card is removed without switching back to eWeLink CUBE, the LED Side Strip will show a **RED** breathing light pattern, indicating Home Assistant Operating System has failed to boot on iHost.*
+- *If the LED strip does not show a blue breathing light pattern within 3 seconds of startup or after pressing the button multiple times, but instead shows a red breathing light pattern, this indicates that the switch back to eWeLink CUBE has failed.*
+- *If the LED strip shows the pattern red flowing light → blue breathing light → red flowing light, this indicates that the switch from Home Assistant to eWeLink CUBE has failed. Please repeat the steps above.*
 
 ## CoreBox
 CoreBox is a new HA over iHost image designed for rapid setup, featuring the latest HA Core version (2025.05.03) pre-intergrated.
