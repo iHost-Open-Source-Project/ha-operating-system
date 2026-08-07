@@ -113,6 +113,12 @@ iHost allows you to export and migrate iHost's Zigbee device data to Home Assist
 
 ![img](images/en/boot-blue-light.gif)
 
+> Please note: The power button is the first button from the top, and the Mute button (♪) is the third button from the top (counting downwards). For visual reference, please see the image below.
+
+![img](images/en/ihost-mute-button.png)
+
+
+
 4. If the LED indicator shows a **BLUE** breathing light pattern, you can access your new Home Assistant web interface within the next 10 minutes. The first boot may take longer.
    On a desktop browser, enter [homeassistant.local:8123](http://homeassistant.local:8123/)*.* 
 
